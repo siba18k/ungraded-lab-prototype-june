@@ -1,67 +1,36 @@
-# NcedoCare — Web App (Care Coordination Portal)
-
-Smarter care for stronger communities.
-
-## Overview
-
-This is the **web-facing Care Coordination Portal** for the NcedoCare system, built for nurses, doctors, and administrators. It connects to the same Firebase backend used by the NcedoCare mobile app.
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 15 (App Router) |
-| UI | shadcn/ui + Tailwind CSS |
-| Auth + DB | Firebase (Auth, Firestore, Cloud Functions) |
-| State | Zustand |
-| Forms | React Hook Form + Zod |
-| Language | TypeScript |
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-### 1. Install dependencies
-```bash
-npm install
-```
+First, run the development server:
 
-### 2. Set up environment variables
-Copy `.env.example` to `.env.local` and fill in your Firebase credentials:
-```bash
-cp .env.example .env.local
-```
-
-### 3. Run the dev server
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Shared Firebase Collections
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Both the mobile app and web app read/write to the same Firestore instance.
-Do NOT change collection or field names without coordinating with the mobile team.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-| Collection | Owner | Purpose |
-|---|---|---|
-| `patients` | Mobile (write) / Web (read) | User profiles + roles |
-| `triageCases` | Mobile (create) / Web (update) | Core case lifecycle |
-| `facilityQueues` | Cloud Functions | Real-time queue positions |
-| `blockchainEvents` | Cloud Functions only | Immutable audit trail |
-| `facilities` | Admin | Facility registry |
+## Learn More
 
-## Project Structure
+To learn more about Next.js, take a look at the following resources:
 
-```
-src/
-├── app/           # Next.js App Router pages
-├── components/    # UI components (layout, nurse, doctor, shared)
-├── firebase/      # Firebase service modules
-├── hooks/         # Custom React hooks
-├── store/         # Zustand global state
-└── types/         # TypeScript interfaces (shared schema)
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## Environment Variables
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-See `.env.example` for all required variables. Never commit `.env.local`.
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
