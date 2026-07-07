@@ -59,6 +59,7 @@ export default function RegisterPage() {
     const [results, setResults] = useState<HealthsiteResult[]>([])
     const [searching, setSearching] = useState(false)
     const [searchError, setSearchError] = useState('')
+    const [notice, setNotice] = useState('')
     const [selectedFacility, setSelectedFacility] = useState<HealthsiteResult | null>(null)
     const [facilityIsNew, setFacilityIsNew] = useState<boolean | null>(null)
     const [role, setRole] = useState<StaffRole>('nurse')
@@ -74,6 +75,7 @@ export default function RegisterPage() {
     const runSearch = async () => {
         setSearching(true)
         setSearchError('')
+        setNotice('')
         try {
             const res = await fetch(
                 `/api/healthsites/search?q=${encodeURIComponent(searchTerm)}&country=South Africa`
@@ -81,6 +83,7 @@ export default function RegisterPage() {
             const data = await res.json()
             if (!res.ok) throw new Error(data.error || 'Search failed')
             setResults(data.facilities)
+            if (data.notice) setNotice(data.notice)
         } catch (err) {
             setSearchError(
                 err instanceof Error ? err.message : 'Could not search facilities.'
@@ -142,11 +145,16 @@ export default function RegisterPage() {
             }
         } catch (err) {
             const message =
-                err instanceof Error ? err.message : 'Registration failed. Try again.'
+                err instanceof Error && err.message.includes('email-already-in-use')
+                    ? 'This email is already registered. Try logging in instead, or use a different email.'
+                    : err instanceof Error
+                        ? err.message
+                        : 'Registration failed. Try again.'
             setSubmitError(message)
         } finally {
             setLoading(false)
         }
+
     }
 
     return (
@@ -222,6 +230,12 @@ export default function RegisterPage() {
                             {searchError && (
                                 <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
                                     {searchError}
+                                </div>
+                            )}
+
+                            {notice && (
+                                <div className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-xs text-blue-700">
+                                    {notice}
                                 </div>
                             )}
 

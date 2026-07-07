@@ -1,8 +1,8 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getFunctions } from 'firebase/functions'
-import { getStorage } from 'firebase/storage'
+import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions'
+import { getStorage, connectStorageEmulator } from 'firebase/storage'
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -32,3 +32,22 @@ export const functions = getFunctions(app, 'us-central1')
 export const storage = getStorage(app)
 
 export default app
+
+declare global {
+    // eslint-disable-next-line no-var
+    var __FIREBASE_EMULATORS_CONNECTED__: boolean | undefined
+}
+
+const useEmulator =
+    process.env.NODE_ENV === 'development' &&
+    process.env.NEXT_PUBLIC_USE_EMULATOR === 'true'
+
+if (useEmulator && !globalThis.__FIREBASE_EMULATORS_CONNECTED__) {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+    connectFirestoreEmulator(db, '127.0.0.1', 8080)
+    connectFunctionsEmulator(functions, '127.0.0.1', 5001)
+    connectStorageEmulator(storage, '127.0.0.1', 9199)
+
+    globalThis.__FIREBASE_EMULATORS_CONNECTED__ = true
+    console.warn('🔥 Running in EMULATOR mode — not touching production Firebase.')
+}

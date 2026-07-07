@@ -1,5 +1,18 @@
 import { Timestamp } from 'firebase/firestore'
 
+export type StaffRole = 'nurse' | 'doctor' | 'admin'
+
+export type StaffStatus = 'active' | 'pending' | 'suspended'
+
+export interface StaffMember {
+    uid: string
+    name: string
+    email: string
+    role: StaffRole
+    status: StaffStatus
+    facilityId: string
+}
+
 export type UserRole = 'patient' | 'nurse' | 'doctor' | 'admin'
 export type PriorityLevel = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
 export type CaseStatus =
