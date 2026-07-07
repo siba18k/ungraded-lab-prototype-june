@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Loader2, HeartPulse, Eye, EyeOff } from 'lucide-react'
-
+import { getStaffMember } from '@/firebase/staff'
 const schema = z.object({
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -34,9 +34,16 @@ export default function LoginPage() {
     resolver: zodResolver(schema),
   })
 
-  const onSubmit = async (data: FormData) => {
-    setLoading(true)
-    setError('')
+  const cred = await loginWithEmail(data.email, data.password)
+  const staff = await getStaffMember(cred.user.uid)
+
+  if (!staff) throw new Error('Staff profile not found.')
+  if (staff.status === 'pending') throw new Error('Your account is pending admin approval.')
+  if (staff.status === 'suspended') throw new Error('Your account has been suspended.')
+
+  if (staff.role === 'nurse') router.replace('/nurse')
+  else if (staff.role === 'doctor') router.replace('/doctor')
+  else if (staff.role === 'admin') router.replace('/admin')
 
     try {
       const cred = await loginWithEmail(data.email, data.password)

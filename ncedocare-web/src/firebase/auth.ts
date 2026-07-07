@@ -13,3 +13,11 @@ export const logout = () => signOut(auth)
 
 export const onAuthChange = (callback: (user: User | null) => void) =>
     onAuthStateChanged(auth, callback)
+
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from './firebase'
+
+export const signUpWithEmail = (email: string, password: string) =>
+    createUserWithEmailAndPassword(auth, email, password)
+
+
