@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginWithEmail } from '@/firebase/auth'
-import { getPatient } from '@/firebase/patients'
+import { getStaffMember } from '@/firebase/staff'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { Loader2, HeartPulse, Eye, EyeOff } from 'lucide-react'
-import { getStaffMember } from '@/firebase/staff'
+
 const schema = z.object({
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -34,26 +34,23 @@ export default function LoginPage() {
     resolver: zodResolver(schema),
   })
 
-  const cred = await loginWithEmail(data.email, data.password)
-  const staff = await getStaffMember(cred.user.uid)
-
-  if (!staff) throw new Error('Staff profile not found.')
-  if (staff.status === 'pending') throw new Error('Your account is pending admin approval.')
-  if (staff.status === 'suspended') throw new Error('Your account has been suspended.')
-
-  if (staff.role === 'nurse') router.replace('/nurse')
-  else if (staff.role === 'doctor') router.replace('/doctor')
-  else if (staff.role === 'admin') router.replace('/admin')
+  const onSubmit = async (data: FormData) => {
+    setLoading(true)
+    setError('')
 
     try {
       const cred = await loginWithEmail(data.email, data.password)
-      const patient = await getPatient(cred.user.uid)
+      const staff = await getStaffMember(cred.user.uid)
 
-      if (!patient) throw new Error('User profile not found.')
+      if (!staff) throw new Error('Staff profile not found.')
+      if (staff.status === 'pending')
+        throw new Error('Your account is pending admin approval.')
+      if (staff.status === 'suspended')
+        throw new Error('Your account has been suspended.')
 
-      if (patient.role === 'nurse') router.replace('/nurse')
-      else if (patient.role === 'doctor') router.replace('/doctor')
-      else if (patient.role === 'admin') router.replace('/admin')
+      if (staff.role === 'nurse') router.replace('/nurse')
+      else if (staff.role === 'doctor') router.replace('/doctor')
+      else if (staff.role === 'admin') router.replace('/admin')
       else throw new Error('This account cannot access the staff portal.')
     } catch (err: unknown) {
       const message =
