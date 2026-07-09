@@ -1,8 +1,8 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getFunctions } from 'firebase/functions'
-import { getStorage } from 'firebase/storage'
+import { getAuth, connectAuthEmulator } from 'firebase/auth'
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions'
+import { getStorage, connectStorageEmulator } from 'firebase/storage'
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -30,5 +30,18 @@ export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const functions = getFunctions(app, 'us-central1')
 export const storage = getStorage(app)
+
+// Connect to local Firebase emulators when NEXT_PUBLIC_USE_EMULATOR=true
+if (
+    typeof window !== 'undefined' &&
+    process.env.NEXT_PUBLIC_USE_EMULATOR === 'true' &&
+    !(auth as any)._isEmulatorConnected
+) {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true })
+    connectFirestoreEmulator(db, '127.0.0.1', 8080)
+    connectFunctionsEmulator(functions, '127.0.0.1', 5001)
+    connectStorageEmulator(storage, '127.0.0.1', 9199)
+    console.log('[Firebase] Connected to local emulators')
+}
 
 export default app

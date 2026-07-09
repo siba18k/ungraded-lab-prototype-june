@@ -6,6 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
 import { getStaffMember } from '@/firebase/staff'
 import { StaffRole } from '@/types/ncedocare'
+import { useAuthStore } from '@/store/authStore'
 import { Loader2 } from 'lucide-react'
 
 interface AuthGuardProps {
@@ -15,6 +16,7 @@ interface AuthGuardProps {
 
 export default function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
     const router = useRouter()
+    const { setStaff, setRole, setFacilityId } = useAuthStore()
     const [checking, setChecking] = useState(true)
     const [error, setError] = useState('')
 
@@ -56,6 +58,12 @@ export default function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
                         setError(`Role "${staff.role}" is not permitted on this page.`)
                         return
                     }
+
+                    // Populate the global store so child pages can access staff data
+                    setStaff(staff)
+                    setRole(staff.role)
+                    setFacilityId(staff.facilityId)
+
                     setChecking(false)
                 })
                 .catch((err) => {
@@ -70,7 +78,7 @@ export default function AuthGuard({ allowedRoles, children }: AuthGuardProps) {
             clearTimeout(timeout)
             unsub()
         }
-    }, [router, allowedRoles])
+    }, [router, allowedRoles, setStaff, setRole, setFacilityId])
 
     if (error) {
         return (

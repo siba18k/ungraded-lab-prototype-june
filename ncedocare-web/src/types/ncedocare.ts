@@ -7,10 +7,12 @@ export type StaffStatus = 'active' | 'pending' | 'suspended'
 export interface StaffMember {
     uid: string
     name: string
+    fullName: string
     email: string
     role: StaffRole
     status: StaffStatus
     facilityId: string
+    facilityName: string
 }
 
 export type UserRole = 'patient' | 'nurse' | 'doctor' | 'admin'
